@@ -39,7 +39,7 @@ class WhatsAppMessage(BaseModel):
 
 
 def create_agents(pdf_content: str, pdf_name: str) -> Team:
-    """Create the 3 agents + team manager for contract analysis"""
+    """3 agents + team manager for analysis"""
     def get_docs():
         chunk_size = 2000
         return [
@@ -132,7 +132,7 @@ async def verify_webhook(mode: str, verify_token: str, challenge: str):
 
 @app.post("/webhook")
 async def receive_message(msg: Request):
-    """Receive incoming WhatsApp messages"""
+    """Receive  WhtApp messages"""
     payload = await msg.json()
     logging.info("Incoming WhatsApp payload: %s", payload)
     body = payload.get("body", "")
