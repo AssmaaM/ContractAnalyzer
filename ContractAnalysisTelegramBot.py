@@ -171,7 +171,7 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
 
-    logging.info("🤖 Telegram Contract Analysis Bot started (pipeline)")
+    logging.info("Telegram Contract Analysis Bot started (pipeline)")
     app.run_polling()
 
 if __name__ == "__main__":
