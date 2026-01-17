@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from agno.agent import Agent
 from agno.team import Team
-from agno.models.openai import OpenAIChat
+from agno.models.mistral import MistralChat
 from agno.knowledge.reader.pdf_reader import PDFReader
 from agno.db.postgres import PostgresDb
 
@@ -48,7 +48,7 @@ def create_agents(pdf_content: str, pdf_name: str) -> Team:
             for i in range(0, len(pdf_content), chunk_size)
         ]
 
-    model = OpenAIChat(id="gpt-4", api_key=MISTRAL_API_KEY)
+    model = MistralChat(id="mistral-large-latest", api_key=MISTRAL_API_KEY)
 
     contract_agent = Agent(
         session_id=SESSION_ID,
