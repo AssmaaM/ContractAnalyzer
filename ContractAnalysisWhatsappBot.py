@@ -29,7 +29,8 @@ reader = PDFReader()
 contract_db = PostgresDb(db_url="postgresql://postgres:12345@localhost:5432/contractDb")
 
 app = FastAPI()
-
+SESSION_ID = str(uuid.uuid4())
+USER_ID = str(uuid.uuid4())
 
 class WhatsAppMessage(BaseModel):
     from_: str
@@ -50,8 +51,8 @@ def create_agents(pdf_content: str, pdf_name: str) -> Team:
     model = OpenAIChat(id="gpt-4", api_key=MISTRAL_API_KEY)
 
     contract_agent = Agent(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Contract structure agent",
         model=model,
         tools=[get_docs],
@@ -68,8 +69,8 @@ def create_agents(pdf_content: str, pdf_name: str) -> Team:
     )
 
     legal_agent = Agent(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Legal framework agent",
         model=model,
         tools=[get_docs],
@@ -87,8 +88,8 @@ def create_agents(pdf_content: str, pdf_name: str) -> Team:
     )
 
     negotiation_agent = Agent(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Negotiation agent",
         model=model,
         tools=[get_docs],
@@ -106,8 +107,8 @@ def create_agents(pdf_content: str, pdf_name: str) -> Team:
     )
 
     return Team(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Team Manager",
         members=[contract_agent, legal_agent, negotiation_agent],
         show_members_responses=True,
