@@ -1,7 +1,6 @@
 import uuid
 import os
 import asyncio
-from typing import List
 from textwrap import dedent
 from agno.agent import Agent
 from agno.team import Team
@@ -11,6 +10,9 @@ from agno.db.postgres import PostgresDb
 from agno.knowledge.reader.pdf_reader import PDFReader
 
 mistral_api_key = os.getenv("MISTRAL_API_KEY")
+SESSION_ID = str(uuid.uuid4())
+USER_ID = str(uuid.uuid4())
+
 
 st.set_page_config(
     page_title="Contract Scanning multi-agent system",
@@ -50,8 +52,8 @@ def get_docs():
 contractdb=PostgresDb(db_url="postgresql://postgres:12345@localhost:5432/contractDb")
 
 contract_agent=Agent(
-    session_id=str(uuid.uuid4()),
-    user_id=str(uuid.uuid4()),
+    session_id=SESSION_ID,
+    user_id=USER_ID,
     name="Contract structure agent",
     model=MistralChat(id="mistral-large-latest",api_key=mistral_api_key),
     tools=[get_docs],
@@ -68,8 +70,8 @@ contract_agent=Agent(
     markdown=True,
 )
 legalFramework_agent=Agent(
-    session_id=str(uuid.uuid4()),
-    user_id=str(uuid.uuid4()),
+    session_id=SESSION_ID,
+    user_id=USER_ID,
     name="Legal framework agent",
     model=MistralChat(id="mistral-large-latest",api_key=mistral_api_key),
     tools=[get_docs],
@@ -86,8 +88,8 @@ legalFramework_agent=Agent(
     markdown=True,
 )
 negotiating_agent=Agent(
-    session_id=str(uuid.uuid4()),
-    user_id=str(uuid.uuid4()),
+    session_id=SESSION_ID,
+    user_id=USER_ID,
     name="Negotiating agent",
     model=MistralChat(id="mistral-large-latest",api_key=mistral_api_key),
     tools=[get_docs],
@@ -105,8 +107,8 @@ negotiating_agent=Agent(
 
 
 team_manager = Team(
-    session_id=str(uuid.uuid4()),
-    user_id=str(uuid.uuid4()),
+    session_id=SESSION_ID,
+    user_id=USER_ID,
     id="team_manager",
     name="Team manager",
     members=[contract_agent, legalFramework_agent, negotiating_agent],
