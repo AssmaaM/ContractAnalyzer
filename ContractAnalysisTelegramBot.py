@@ -3,7 +3,6 @@ import logging
 from dotenv import load_dotenv
 from textwrap import dedent
 import os
-import asyncio
 from io import BytesIO
 
 from telegram import Update
@@ -24,6 +23,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
+SESSION_ID = str(uuid.uuid4())
+USER_ID = str(uuid.uuid4())
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
@@ -47,8 +48,8 @@ async def analyze_contract_pipeline(pdf_text: str, pdf_name: str):
 
    
     structure_agent = Agent(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Contract Structure Agent",
         model=model,
         tools=[],  
@@ -65,8 +66,8 @@ async def analyze_contract_pipeline(pdf_text: str, pdf_name: str):
     structured_result = await structure_agent.arun(pdf_text)
 
     legal_agent = Agent(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Legal Framework Agent",
         model=model,
         tools=[],
@@ -86,8 +87,8 @@ async def analyze_contract_pipeline(pdf_text: str, pdf_name: str):
     legal_result = await legal_agent.arun(structured_result.content)
 
     negotiation_agent = Agent(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Negotiation Agent",
         model=model,
         tools=[],
@@ -112,9 +113,10 @@ async def analyze_contract_pipeline(pdf_text: str, pdf_name: str):
     )
 
     team_manager = Team(
-        session_id=str(uuid.uuid4()),
-        user_id=str(uuid.uuid4()),
+        session_id=SESSION_ID,
+        user_id=USER_ID,
         name="Team Manager",
+        #we can do    members=[contract_agent, legalFramework_agent, negotiating_agent],
         members=[],
         show_members_responses=True,
         instructions=dedent("""
@@ -132,9 +134,6 @@ async def analyze_contract_pipeline(pdf_text: str, pdf_name: str):
     return final_result
 
 
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info("TEXT RECEIVED: %s", update.message.text)
-    await update.message.reply_text("Please upload a PDF contract for analysis.")
 
 async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info("DOCUMENT RECEIVED")
@@ -168,7 +167,6 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
 
     logging.info("Telegram Contract Analysis Bot started (pipeline)")
